@@ -74,9 +74,23 @@ checkwget() {
 checkspeedtest() {
 	if  [ ! -e './speedtest-cli/speedtest' ]; then
 		echo "正在安装 Speedtest-cli"
-		wget --no-check-certificate -qO speedtest.tgz https://bintray.com/ookla/download/download_file?file_path=ookla-speedtest-1.0.0-$(uname -m)-linux.tgz > /dev/null 2>&1
+		
+	else
+		echo "已经安装，请先卸载"
+		apt-get remove speedtest ; yum remove speedtest
+		exit
 	fi
-	mkdir -p speedtest-cli && tar zxvf speedtest.tgz -C ./speedtest-cli/ > /dev/null 2>&1 && chmod a+rx ./speedtest-cli/speedtest
+	if  [[ ${release} == debian || ${release} == ubuntu ]] ; then
+		curl -s https://install.speedtest.net/app/cli/install.deb.sh | bash
+		apt-get install speedtest
+	elif [ ${release} == "centos" ] ; then
+		curl -s https://install.speedtest.net/app/cli/install.rpm.sh |  bash
+		yum install speedtest
+	else
+		echo "不是合适的版本"
+		exit
+	fi
+	
 }
 
 speed_test(){
